@@ -31,7 +31,20 @@ Install CRD:
 make install
 ```
 
-```
+
+---
+
+### Kustomize for M1
+
+Initalize with plugins:
+```bash
 kubebuilder init \
+  --domain shubhamtatvamasi.com \
+  --repo github.com/ShubhamTatvamasi/mycrd \
   --plugins=kustomize/v2-alpha,base.go.kubebuilder.io/v3
+```
+
+Change kustomize version in `Makefile`:
+```Makefile
+KUSTOMIZE_VERSION ?= v4.5.5
 ```
