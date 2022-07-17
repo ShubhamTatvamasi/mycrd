@@ -18,13 +18,21 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 
+	v1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/api/resource"
+
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	demov1 "github.com/ShubhamTatvamasi/mycrd/api/v1"
+	"github.com/go-logr/logr"
 )
 
 // DemoVolumeReconciler reconciles a DemoVolume object
@@ -50,9 +58,57 @@ func (r *DemoVolumeReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 	l := log.FromContext(ctx)
 	l.Info("Enter Reconcile", "req", req)
 
-	// TODO(user): your logic here
+	volume := &demov1.DemoVolume{}
+	r.Get(ctx, types.NamespacedName{Name: req.Name, Namespace: req.Namespace}, volume)
+
+	l.Info("Enter Reconcile", "spec", volume.Spec, "status", volume.Status)
+
+	if volume.Spec.Name != volume.Status.Name {
+		volume.Status.Name = volume.Spec.Name
+		r.Status().Update(ctx, volume)
+	}
+
+	l.Info("Enter Recconcile -> ", "spec", volume.Spec, "status", volume.Status)
+
+	r.reconcilePVC(ctx, volume, l)
 
 	return ctrl.Result{}, nil
+}
+
+func (r *DemoVolumeReconciler) reconcilePVC(ctx context.Context, volume *demov1.DemoVolume, l logr.Logger) error {
+	pvc := &v1.PersistentVolumeClaim{}
+	err := r.Get(ctx, types.NamespacedName{Name: volume.Name, Namespace: volume.Namespace}, pvc)
+
+	if err == nil {
+		l.Info("PVC Found")
+		return nil
+	}
+
+	if !errors.IsNotFound(err) {
+		return err
+	}
+
+	l.Info("PVC Not found")
+
+	storageClass := "standard"
+	storageReq, _ := resource.ParseQuantity(fmt.Sprintf("%dGi", volume.Spec.Size))
+
+	pvc = &v1.PersistentVolumeClaim{
+		ObjectMeta: metav1.ObjectMeta{
+			Namespace: volume.Namespace,
+			Name:      volume.Name,
+		},
+		Spec: v1.PersistentVolumeClaimSpec{
+			StorageClassName: &storageClass,
+			AccessModes:      []v1.PersistentVolumeAccessMode{"ReadWriteOnce"},
+			Resources: v1.ResourceRequirements{
+				Requests: v1.ResourceList{"storage": storageReq},
+			},
+		},
+	}
+
+	l.Info("Create PVC")
+	return r.Create(ctx, pvc)
 }
 
 // SetupWithManager sets up the controller with the Manager.

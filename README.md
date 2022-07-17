@@ -26,11 +26,25 @@ Generate webhooks:
 make manifests
 ```
 
-Install CRD:
+Install Custom Resource Definition:
 ```bash
 make install
 ```
 
+Install Custom Resource:
+```bash
+kubectl apply -f config/samples/
+```
+
+Delete Custom Resource:
+```bash
+kubectl delete -f config/samples/
+```
+
+Run your controller:
+```bash
+make run
+```
 
 ---
 

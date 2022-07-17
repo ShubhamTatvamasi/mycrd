@@ -44,6 +44,11 @@ spec:
             type: object
           status:
             description: DemoVolumeStatus defines the observed state of DemoVolume
+            properties:
+              name:
+                type: string
+              size:
+                type: integer
             type: object
         type: object
     served: true
