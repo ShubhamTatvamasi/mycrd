@@ -30,7 +30,7 @@ type DemoVolumeSpec struct {
 
 	// Foo is an example field of DemoVolume. Edit demovolume_types.go to remove/update
 	Name string `json:"name,omitempty"`
-	Size string `json:"int,omitempty"`
+	Size int    `json:"size,omitempty"`
 }
 
 // DemoVolumeStatus defines the observed state of DemoVolume

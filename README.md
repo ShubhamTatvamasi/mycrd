@@ -20,3 +20,18 @@ Generate CRD:
 ```bash
 make generate
 ```
+
+Generate webhooks:
+```bash
+make manifests
+```
+
+Install CRD:
+```bash
+make install
+```
+
+```
+kubebuilder init \
+  --plugins=kustomize/v2-alpha,base.go.kubebuilder.io/v3
+```
