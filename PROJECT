@@ -1,0 +1,6 @@
+domain: shubhamtatvamasi.com
+layout:
+- go.kubebuilder.io/v3
+projectName: mycrd
+repo: github.com/ShubhamTatvamasi/mycrd
+version: "3"
