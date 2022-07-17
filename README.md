@@ -14,4 +14,9 @@ kubebuilder create api \
   --group demo \
   --kind DemoVolume
 ```
+---
 
+Generate CRD:
+```bash
+make generate
+```

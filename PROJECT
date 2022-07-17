@@ -3,4 +3,14 @@ layout:
 - go.kubebuilder.io/v3
 projectName: mycrd
 repo: github.com/ShubhamTatvamasi/mycrd
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: shubhamtatvamasi.com
+  group: demo
+  kind: DemoVolume
+  path: github.com/ShubhamTatvamasi/mycrd/api/v1
+  version: v1
 version: "3"
